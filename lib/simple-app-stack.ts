@@ -17,7 +17,7 @@ export class SimpleAppStack extends cdk.Stack {
       runtime: Runtime.NODEJS_12_X,
       entry: path.join(__dirname, '..', 'api', 'get-photos', 'index.ts'),
       handler: 'getPhotos',
-    }) 
+    });
 
     new cdk.CfnOutput(this, 'MySimpleAppBucketNameExport', {
       value: bucket.bucketName,
