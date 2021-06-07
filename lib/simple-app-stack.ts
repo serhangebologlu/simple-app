@@ -4,6 +4,7 @@ import * as cdk from '@aws-cdk/core';
 import { Runtime } from '@aws-cdk/aws-lambda';
 import * as path from 'path';
 import {BucketDeployment, Source} from '@aws-cdk/aws-s3-deployment';
+import { PolicyStatement } from '@aws-cdk/aws-iam';
 
 
 export class SimpleAppStack extends cdk.Stack {
@@ -30,9 +31,22 @@ export class SimpleAppStack extends cdk.Stack {
       },
     });
 
+    const bucketContainerPermissions = new PolicyStatement();
+    bucketContainerPermissions.addResources(bucket.bucketArn);
+    bucketContainerPermissions.addActions('s3:ListBucket');
+
+    const bucketPermissions = new PolicyStatement();
+    bucketPermissions.addResources(`${bucket.bucketArn}/*`);
+    bucketPermissions.addActions('s3:GetObject', 's3:PutObject');
+
+    getPhotos.addToRolePolicy(bucketContainerPermissions);
+    getPhotos.addToRolePolicy(bucketPermissions);
+
     new cdk.CfnOutput(this, 'MySimpleAppBucketNameExport', {
       value: bucket.bucketName,
       exportName: 'MySimpleAppBucketName'
     });
+
+
   }
 }
