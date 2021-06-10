@@ -7,6 +7,7 @@ import {BucketDeployment, Source} from '@aws-cdk/aws-s3-deployment';
 import { PolicyStatement } from '@aws-cdk/aws-iam';
 import { CorsHttpMethod, HttpApi, HttpMethod } from '@aws-cdk/aws-apigatewayv2';
 import { LambdaProxyIntegration } from '@aws-cdk/aws-apigatewayv2-integrations';
+import {CloudFrontWebDistribution} from '@aws-cdk/aws-cloudfront';
 
 
 export class SimpleAppStack extends cdk.Stack {
@@ -34,7 +35,18 @@ export class SimpleAppStack extends cdk.Stack {
         Source.asset(path.join(__dirname, '..', '/frontend', 'build'))
       ],
       destinationBucket: websiteBucket,
-    })
+    });
+
+    const cloudFront = new CloudFrontWebDistribution(this, 'MySimpleAppDistribution', {
+      originConfigs:[
+        {
+          s3OriginSource:{
+            s3BucketSource: websiteBucket,
+          },
+          behaviors: [{isDefaultBehavior: true}]
+        }
+      ] 
+    });
 
     const getPhotos = new lambda.NodejsFunction(this, 'MySimpleAppLambda', {
       runtime: Runtime.NODEJS_12_X,
@@ -85,11 +97,16 @@ export class SimpleAppStack extends cdk.Stack {
     new cdk.CfnOutput(this, 'MySimpleAppWebSiteBucketNameExport', {
       value: websiteBucket.bucketName,
       exportName: 'MySimpleAppWebSiteBucketName',
+    });
+
+    new cdk.CfnOutput(this, 'MySimpleAppWebSiteUrl', {
+      value: cloudFront.distributionDomainName,
+      exportName: 'MySimpleAppUrl',
     })
 
     new cdk.CfnOutput(this, 'MySimpleAppApiExport', {
       value: httpApi.url!,
-      exportName: 'MySimpleAppApi'
+      exportName: 'MySimpleAppApi',
     });
 
   }
