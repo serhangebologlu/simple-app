@@ -75,8 +75,5 @@ export class SimpleAppStack extends cdk.Stack {
       exportName: 'MySimpleAppApi'
     });
 
-
-
-
   }
 }
