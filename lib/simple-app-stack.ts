@@ -9,13 +9,16 @@ import { CorsHttpMethod, HttpApi, HttpMethod } from '@aws-cdk/aws-apigatewayv2';
 import { LambdaProxyIntegration } from '@aws-cdk/aws-apigatewayv2-integrations';
 import {CloudFrontWebDistribution} from '@aws-cdk/aws-cloudfront';
 
+interface SimpleAppStackProps extends cdk.StackProps {
+  envName: string
+}
 
 export class SimpleAppStack extends cdk.Stack {
-  constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
+  constructor(scope: cdk.Construct, id: string, props?: SimpleAppStackProps) {
     super(scope, id, props);
 
     const bucket = new Bucket(this, 'MySimpleAppBucket', {
-      encryption: BucketEncryption.S3_MANAGED,
+      encryption: props?.envName === 'prod' ? BucketEncryption.S3_MANAGED : BucketEncryption.UNENCRYPTED,
     });
 
     const websiteBucket = new Bucket(this, 'MySimpleAppWebSiteBucket', {
@@ -30,13 +33,6 @@ export class SimpleAppStack extends cdk.Stack {
       destinationBucket: bucket,
     });
 
-    new BucketDeployment(this, 'MySimpleAppWebSiteDeploy', {
-      sources: [
-        Source.asset(path.join(__dirname, '..', '/frontend', 'build'))
-      ],
-      destinationBucket: websiteBucket,
-    });
-
     const cloudFront = new CloudFrontWebDistribution(this, 'MySimpleAppDistribution', {
       originConfigs:[
         {
@@ -46,6 +42,14 @@ export class SimpleAppStack extends cdk.Stack {
           behaviors: [{isDefaultBehavior: true}]
         }
       ] 
+    });
+
+    new BucketDeployment(this, 'MySimpleAppWebSiteDeploy', {
+      sources: [
+        Source.asset(path.join(__dirname, '..', '/frontend', 'build'))
+      ],
+      destinationBucket: websiteBucket,
+      distribution: cloudFront,
     });
 
     const getPhotos = new lambda.NodejsFunction(this, 'MySimpleAppLambda', {
