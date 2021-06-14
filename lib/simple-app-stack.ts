@@ -95,22 +95,22 @@ export class SimpleAppStack extends cdk.Stack {
 
     new cdk.CfnOutput(this, 'MySimpleAppBucketNameExport', {
       value: bucket.bucketName,
-      exportName: 'MySimpleAppBucketName'
+      exportName: `MySimpleAppBucketName${props?.envName}`
     });
 
     new cdk.CfnOutput(this, 'MySimpleAppWebSiteBucketNameExport', {
       value: websiteBucket.bucketName,
-      exportName: 'MySimpleAppWebSiteBucketName',
+      exportName: `MySimpleAppWebSiteBucketName${props?.envName}`,
     });
 
     new cdk.CfnOutput(this, 'MySimpleAppWebSiteUrl', {
       value: cloudFront.distributionDomainName,
-      exportName: 'MySimpleAppUrl',
+      exportName: `MySimpleAppUrl${props?.envName}`,
     })
 
     new cdk.CfnOutput(this, 'MySimpleAppApiExport', {
       value: httpApi.url!,
-      exportName: 'MySimpleAppApi',
+      exportName: `MySimpleAppApi${props?.envName}`,
     });
 
   }
