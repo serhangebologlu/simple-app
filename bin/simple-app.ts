@@ -9,12 +9,14 @@ const app = new cdk.App();
 
 const {hostedZone, certificate} = new SimpleAppStackDns(app, 'SimpleAppStackDns', {
   dnsName: domainNameApex,
+  env: {region: 'us-east-1'}
 });
 
 new SimpleAppStack(app, 'SimpleAppStack', {
   dnsName: domainNameApex,
   hostedZone,
-  certificate
+  certificate,
+  env: {region: 'us-east-1'}
 });
 // new SimpleAppStack(app, 'SimpleAppStack-dev', {
 //   env: {region: 'eu-central-1'},

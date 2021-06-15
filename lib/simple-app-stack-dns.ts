@@ -20,7 +20,8 @@ export class SimpleAppStackDns extends cdk.Stack {
 
         this.certificate = new Certificate(this, 'SimpleAppCertificateManager', {
             domainName: props.dnsName,
-            validation: CertificateValidation.fromDns(this.hostedZone)
+            validation: CertificateValidation.fromDns(this.hostedZone),
+        
         })
     }
 }
