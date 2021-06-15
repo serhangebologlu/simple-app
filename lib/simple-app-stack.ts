@@ -10,7 +10,7 @@ import { LambdaProxyIntegration } from '@aws-cdk/aws-apigatewayv2-integrations';
 import {CloudFrontWebDistribution} from '@aws-cdk/aws-cloudfront';
 
 interface SimpleAppStackProps extends cdk.StackProps {
-  envName: string
+  // envName: string
 }
 
 export class SimpleAppStack extends cdk.Stack {
@@ -18,7 +18,8 @@ export class SimpleAppStack extends cdk.Stack {
     super(scope, id, props);
 
     const bucket = new Bucket(this, 'MySimpleAppBucket', {
-      encryption: props?.envName === 'prod' ? BucketEncryption.S3_MANAGED : BucketEncryption.UNENCRYPTED,
+      encryption: BucketEncryption.S3_MANAGED,
+      // encryption: props?.envName === 'prod' ? BucketEncryption.S3_MANAGED : BucketEncryption.UNENCRYPTED,
     });
 
     const websiteBucket = new Bucket(this, 'MySimpleAppWebSiteBucket', {
@@ -95,22 +96,26 @@ export class SimpleAppStack extends cdk.Stack {
 
     new cdk.CfnOutput(this, 'MySimpleAppBucketNameExport', {
       value: bucket.bucketName,
-      exportName: `MySimpleAppBucketName${props?.envName}`
+      exportName: `MySimpleAppBucketName`
+      // exportName: `MySimpleAppBucketName${props?.envName}`
     });
 
     new cdk.CfnOutput(this, 'MySimpleAppWebSiteBucketNameExport', {
       value: websiteBucket.bucketName,
-      exportName: `MySimpleAppWebSiteBucketName${props?.envName}`,
+      exportName: `MySimpleAppWebSiteBucketName`,
+      // exportName: `MySimpleAppWebSiteBucketName${props?.envName}`,
     });
 
     new cdk.CfnOutput(this, 'MySimpleAppWebSiteUrl', {
       value: cloudFront.distributionDomainName,
-      exportName: `MySimpleAppUrl${props?.envName}`,
+      exportName: `MySimpleAppUrl`,
+      // exportName: `MySimpleAppUrl${props?.envName}`,
     })
 
     new cdk.CfnOutput(this, 'MySimpleAppApiExport', {
       value: httpApi.url!,
-      exportName: `MySimpleAppApi${props?.envName}`,
+      exportName: `MySimpleAppApi`,
+      // exportName: `MySimpleAppApi${props?.envName}`,
     });
 
   }
