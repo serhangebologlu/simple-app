@@ -4,24 +4,25 @@ import * as cdk from '@aws-cdk/core';
 import * as path from 'path';
 
 interface S3BucketWithDeployProps {
-
+    deployTo: string[];
+    encryption: BucketEncryption;
 }
 
 export class S3BucketWithDeploy extends cdk.Construct {
     public readonly bucket: IBucket;
-    constructor(scope: cdk.Construct, id: string, props?: S3BucketWithDeployProps){
+    constructor(scope: cdk.Construct, id: string, props: S3BucketWithDeployProps){
         super(scope, id);
 
-        const bucket = new Bucket(this, 'MySimpleAppBucket', {
-            encryption: BucketEncryption.S3_MANAGED,
+        this.bucket = new Bucket(this, 'MySimpleAppBucket', {
+            encryption: props.encryption,
             // encryption: props?.envName === 'prod' ? BucketEncryption.S3_MANAGED : BucketEncryption.UNENCRYPTED,
           });
 
           new BucketDeployment(this, 'MySimpleAppPhotos', {
             sources: [
-              Source.asset(path.join(__dirname, '..', 'photos'))
+              Source.asset(path.join(__dirname, ...props.deployTo))
             ],
-            destinationBucket: bucket,
+            destinationBucket: this.bucket,
           });
         
     }

@@ -25,7 +25,10 @@ export class SimpleAppStack extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, props: SimpleAppStackProps) {
     super(scope, id, props);
 
-    const {bucket} = new S3BucketWithDeploy(this, 'MySimpleAppCustomBucket');
+    const {bucket} = new S3BucketWithDeploy(this, 'MySimpleAppCustomBucket', {
+      deployTo: ['..', 'photos'],
+      encryption: BucketEncryption.S3_MANAGED,
+    });
     const websiteBucket = new Bucket(this, 'MySimpleAppWebSiteBucket', {
       websiteIndexDocument: 'index.html',
       publicReadAccess: true,
