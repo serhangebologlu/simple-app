@@ -67,7 +67,8 @@ export class SimpleAppStack extends cdk.Stack {
     const getPhotos = new lambda.NodejsFunction(this, 'MySimpleAppLambda', {
       runtime: Runtime.NODEJS_12_X,
       entry: path.join(__dirname, '..', 'api', 'get-photos', 'index.ts'),
-      handler: 'getPhotos',
+      // handler: 'getPhotos',
+      handler: 'getPhotoByName',
       environment: {
         PHOTO_BUCKET_NAME: bucket.bucketName
       },
@@ -97,8 +98,16 @@ export class SimpleAppStack extends cdk.Stack {
       handler: getPhotos
     });
 
+    // httpApi.addRoutes({
+    //   path: '/getAllPhotos',
+    //   methods: [
+    //     HttpMethod.GET,
+    //   ],
+    //   integration: lambdaIntegration
+    // });
+
     httpApi.addRoutes({
-      path: '/getAllPhotos',
+      path: '/getPhotoByName/{photoName}',
       methods: [
         HttpMethod.GET,
       ],
