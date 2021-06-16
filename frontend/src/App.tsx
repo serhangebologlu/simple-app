@@ -27,7 +27,7 @@ function App() {
   
   return (
     <div className="App bg-secondary min-vh-100">
-      <h1 className='display-3 p-3 mb-5'>Ortaya Karışık</h1>
+      <h1 className='display-3 p-3 mb-5'>Carousel</h1>
       <Carousel>{allPhotos.map(photo => getCarouselImage(photo))}</Carousel>
     </div>
   );
