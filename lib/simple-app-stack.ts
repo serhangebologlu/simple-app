@@ -12,6 +12,7 @@ import { ARecord, IPublicHostedZone, RecordTarget } from '@aws-cdk/aws-route53';
 import { ICertificate } from '@aws-cdk/aws-certificatemanager';
 import { S3Origin } from '@aws-cdk/aws-cloudfront-origins';
 import { CloudFrontTarget } from '@aws-cdk/aws-route53-targets';
+import { S3BucketWithDeploy } from './s3-bucket-wtih-deploy';
 
 interface SimpleAppStackProps extends cdk.StackProps {
   dnsName: string,
@@ -24,21 +25,10 @@ export class SimpleAppStack extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, props: SimpleAppStackProps) {
     super(scope, id, props);
 
-    const bucket = new Bucket(this, 'MySimpleAppBucket', {
-      encryption: BucketEncryption.S3_MANAGED,
-      // encryption: props?.envName === 'prod' ? BucketEncryption.S3_MANAGED : BucketEncryption.UNENCRYPTED,
-    });
-
+    const {bucket} = new S3BucketWithDeploy(this, 'MySimpleAppCustomBucket');
     const websiteBucket = new Bucket(this, 'MySimpleAppWebSiteBucket', {
       websiteIndexDocument: 'index.html',
       publicReadAccess: true,
-    });
-
-    new BucketDeployment(this, 'MySimpleAppPhotos', {
-      sources: [
-        Source.asset(path.join(__dirname, '..', 'photos'))
-      ],
-      destinationBucket: bucket,
     });
 
     const cloudFront = new Distribution(this, 'MySimpleAppDistribution', {
